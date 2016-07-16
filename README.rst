@@ -1,6 +1,9 @@
 Library to make you services reliable
 =====================================
 
+.. image:: https://travis-ci.org/phantomii/pyretries.svg?branch=master
+    :target: https://travis-ci.org/phantomii/pyretries
+
 Retry on specific exception
 ---------------------------
 
