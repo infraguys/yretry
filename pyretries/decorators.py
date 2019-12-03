@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import abc
-import collections
 import functools
 import time
 import types
@@ -43,22 +42,20 @@ class CatchFunctionStrategy(CatchStrategy):
 
 class CatchExceptionStrategy(CatchFunctionStrategy):
 
-    def __init__(self, exceptions_to_retry):
-        self._exceptions_to_retry = exceptions_to_retry
-        retry_exceptions = self._to_tuple()
-        super(CatchExceptionStrategy, self).__init__(
-            lambda exc: isinstance(exc, retry_exceptions))
-
-    def _to_tuple(self):
-        if isinstance(self._exceptions_to_retry, collections.Iterable):
-            retry_exceptions = tuple(self._exceptions_to_retry)
-        else:
-            retry_exceptions = (self._exceptions_to_retry,)
-        return retry_exceptions
+    def __init__(self, exceptions_to_retry, exceptions_to_ignore=None):
+        strategy = lambda exc: isinstance(exc, exceptions_to_retry)
+        if exceptions_to_ignore:
+            strategy = lambda exc: (isinstance(exc, exceptions_to_retry)
+                                    and not isinstance(exc,
+                                                       exceptions_to_ignore))
+        super(CatchExceptionStrategy, self).__init__(strategy)
 
 
-def retry(attempts_number, delay=0, step=0,
+def retry(attempts_number,
+          delay=0,
+          step=0,
           retry_on=Exception,
+          retry_except=None,
           logger=None):
     """Reties function several times
 
@@ -67,6 +64,8 @@ def retry(attempts_number, delay=0, step=0,
     @param step: increment value of timeout on each retry
     @param retry_on: exception that should be handled or function that checks
                      if retry should be executed (default: Exception)
+    @param retry_except: exception that should not be handled if exception
+                         was specified into `retry_on` (default: None)
     @param logger: logger to write warnings
 
     @return: the result of decorated function
@@ -91,7 +90,12 @@ def retry(attempts_number, delay=0, step=0,
                                      types.MethodType,)):
                 catch_strategy = CatchFunctionStrategy(retry_on)
             else:
-                catch_strategy = CatchExceptionStrategy(retry_on)
+                # TODO(g.melikov): this retry() should be splitted into
+                #  multiple functions (like `retry_on_func` and
+                #  `retry_on_exceptions`); current interface is leaky.
+                #  Also `retry_except` parameter takes effect only in this
+                #  execution branch and is ignored in other.
+                catch_strategy = CatchExceptionStrategy(retry_on, retry_except)
 
             while attempts <= attempts_number:
                 try:

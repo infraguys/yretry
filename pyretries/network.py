@@ -55,7 +55,11 @@ def is_network_failure(error):
             is_retriable_requests_httperror(error))
 
 
-def retry(attempts_number=None, delay=None, step=0, retry_on=None,
+def retry(attempts_number=None,
+          delay=None,
+          step=0,
+          retry_on=None,
+          retry_except=None,
           logger=None):
 
     def decorator(func):
@@ -78,8 +82,12 @@ def retry(attempts_number=None, delay=None, step=0, retry_on=None,
             else:
                 retry_func = retry_on
 
-            failover_func = decorators.retry(retry_attempts, retry_delay,
-                                             step, retry_func, logger)(func)
+            failover_func = decorators.retry(retry_attempts,
+                                             retry_delay,
+                                             step,
+                                             retry_func,
+                                             retry_except,
+                                             logger)(func)
             return failover_func(*args, **kwargs)
 
         return wrapper

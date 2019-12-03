@@ -58,6 +58,12 @@ class FakeClass(mock.Mock):
         self.retry_count()
         raise SuperPuperException()
 
+    @decorators.retry(RETRY_ATTEMPTS, delay=0,
+                      retry_except=(SuperPuperException,))
+    def retry_on_except(self):
+        self.retry_count()
+        raise SuperPuperException()
+
 
 class RetryTestCase(base.TestCase):
 
@@ -99,6 +105,14 @@ class RetryTestCase(base.TestCase):
             return "OK"
 
         self.assertEqual(function_without_parameters(), "OK")
+
+    def test_dont_retry_on_expected_error(self):
+        """Don't retry if exception is SuperPuperException."""
+        self.assertRaises(
+            SuperPuperException,
+            self._target.retry_on_except,
+            )
+        self.assertEqual(self._target.retry_count.call_count, 1)
 
 
 class LoggerTestCase(base.TestCase):
