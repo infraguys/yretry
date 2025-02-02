@@ -43,11 +43,14 @@ class CatchFunctionStrategy(CatchStrategy):
 class CatchExceptionStrategy(CatchFunctionStrategy):
 
     def __init__(self, exceptions_to_retry, exceptions_to_ignore=None):
-        strategy = lambda exc: isinstance(exc, exceptions_to_retry)
         if exceptions_to_ignore:
-            strategy = lambda exc: (isinstance(exc, exceptions_to_retry)
-                                    and not isinstance(exc,
-                                                       exceptions_to_ignore))
+            def strategy(exc):
+                return (isinstance(exc, exceptions_to_retry)
+                        and not isinstance(exc,
+                                           exceptions_to_ignore))
+        else:
+            def strategy(exc):
+                return isinstance(exc, exceptions_to_retry)
         super(CatchExceptionStrategy, self).__init__(strategy)
 
 
