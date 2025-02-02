@@ -20,8 +20,8 @@ import mock
 from six.moves import http_client
 from six.moves.urllib import error
 
-from pyretries import network
-from pyretries.tests import base
+from yretry import network
+from yretry.tests import base
 
 
 RETRY_ATTEMPTS = 3

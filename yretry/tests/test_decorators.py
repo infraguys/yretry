@@ -16,8 +16,8 @@
 
 import mock
 
-from pyretries import decorators
-from pyretries.tests import base
+from yretry import decorators
+from yretry.tests import base
 
 
 RETRY_ATTEMPTS = 3

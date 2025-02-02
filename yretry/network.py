@@ -21,8 +21,8 @@ import socket
 from six.moves import http_client
 from six.moves.urllib import error
 
-from pyretries import decorators
-from pyretries import defaults
+from yretry import decorators
+from yretry import defaults
 
 
 RETRY_SOCKET_EXCEPTIONS = (socket.error, socket.timeout)

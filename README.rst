@@ -1,15 +1,12 @@
 Library to make you services reliable
 =====================================
 
-.. image:: https://travis-ci.org/phantomii/pyretries.svg?branch=master
-    :target: https://travis-ci.org/phantomii/pyretries
-
 Retry on specific exception
 ---------------------------
 
-  import pyretries
+  import yretry
 
-  @pyretries.decorators.retry(attempts_number=3,
+  @yretry.decorators.retry(attempts_number=3,
                             retry_on=(MyException,))
   def reliable_function():
       raise MyException()
@@ -18,12 +15,12 @@ Retry on specific exception
 Specific function to make desicion about retries
 ------------------------------------------------
 
-  import pyretries
+  import yretry
 
   def is_my_mistake(error):
       return isinstance(error, MyMistake)
 
-  @pyretries.decorators.retry(attempts_number=3,
+  @yretry.decorators.retry(attempts_number=3,
                             retry_on=is_my_mistake)
   def reliable_function():
       raise MyMistake()
@@ -36,9 +33,9 @@ You can use following code to add retries for your custom network
 function:
 
   import requests
-  import pyretries
+  import yretry
 
-  @pyretries.network.retry()
+  @yretry.network.retry()
   def reliable_function():
      response = requests.get('http://localhost:5002')
      response.raise_for_status()
@@ -84,7 +81,7 @@ You can pass specific logger to decorator:
 
   LOGGER = logging.getLogger(__name__)
 
-  @pyretries.network.retry(logger=LOGGER)
+  @yretry.network.retry(logger=LOGGER)
   def reliable_function():
      response = requests.get('http://localhost:5002')
      response.raise_for_status()
@@ -104,7 +101,7 @@ decorator will be used object-specific logger:
      def get_logger(self):
          return self._logger
 
-     @pyretries.network.retry()
+     @yretry.network.retry()
      def reliable_method(self):
          pass
 
