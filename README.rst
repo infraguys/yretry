@@ -4,6 +4,8 @@ Library to make you services reliable
 Retry on specific exception
 ---------------------------
 
+.. code-block:: python
+
   import yretry
 
   @yretry.decorators.retry(attempts_number=3,
@@ -14,6 +16,8 @@ Retry on specific exception
 
 Specific function to make desicion about retries
 ------------------------------------------------
+
+.. code-block:: python
 
   import yretry
 
@@ -31,6 +35,8 @@ Retry on network errors
 
 You can use following code to add retries for your custom network
 function:
+
+.. code-block:: python
 
   import requests
   import yretry
@@ -51,6 +57,8 @@ Global logger
 -------------
 
 You can pass specific logger to decorator:
+
+.. code-block:: python
 
   import logging
   import logging.config
@@ -93,6 +101,8 @@ Object-specific logger
 
 If you define method 'get_logger' and decorate some method with retry
 decorator will be used object-specific logger:
+
+.. code-block:: python
 
   class MyClass(object):
      def __init__(self):
