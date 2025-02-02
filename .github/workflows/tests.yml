@@ -5,18 +5,37 @@ on:
   pull_request:
 
 jobs:
+  Lint:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.12"]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox
+        run: sudo apt update && sudo apt install --yes tox
+      - name: Flake8
+        run: |
+          tox -e pep8
   tests:
     runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.8", "3.10", "3.12"]
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.sha }}
-    - name: Install dependencies
-      run: |
-        sudo apt update && sudo apt install --yes tox
-    - name: Linting
-      run: |
-        tox -e pep8
-    - name: Unit tests
-      run: |
-        tox -e py3
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox
+        run: sudo apt update && sudo apt install --yes tox
+      - name: Unit tests
+        run: |
+          tox -e ${{ matrix.python-version }}
