@@ -1,4 +1,4 @@
-Library to make you services reliable
+Library to make your services reliable
 =====================================
 
 Retry on specific exception
@@ -9,12 +9,12 @@ Retry on specific exception
   import yretry
 
   @yretry.decorators.retry(attempts_number=3,
-                            retry_on=(MyException,))
+                           retry_on=(MyException,))
   def reliable_function():
       raise MyException()
 
 
-Specific function to make desicion about retries
+Specific function to make decision about retries
 ------------------------------------------------
 
 .. code-block:: python
@@ -25,7 +25,7 @@ Specific function to make desicion about retries
       return isinstance(error, MyMistake)
 
   @yretry.decorators.retry(attempts_number=3,
-                            retry_on=is_my_mistake)
+                           retry_on=is_my_mistake)
   def reliable_function():
       raise MyMistake()
 
@@ -99,8 +99,7 @@ You can pass specific logger to decorator:
 Object-specific logger
 ----------------------
 
-If you define method 'get_logger' and decorate some method with retry
-decorator will be used object-specific logger:
+You can use object-specific logger, just add 'get_logger' method:
 
 .. code-block:: python
 
