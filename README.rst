@@ -1,5 +1,5 @@
 Library to make your services reliable
-=====================================
+======================================
 
 Retry on specific exception
 ---------------------------
