@@ -26,41 +26,50 @@ from yretry import defaults
 
 
 RETRY_SOCKET_EXCEPTIONS = (socket.error, socket.timeout)
-RETRY_HTTPLIB_EXCEPTIONS = (http_client.BadStatusLine,
-                            http_client.NotConnected,
-                            http_client.CannotSendRequest,
-                            http_client.CannotSendHeader)
-RETRY_URLLIB_EXCEPTIONS = (error.HTTPError, )
+RETRY_HTTPLIB_EXCEPTIONS = (
+    http_client.BadStatusLine,
+    http_client.NotConnected,
+    http_client.CannotSendRequest,
+    http_client.CannotSendHeader,
+)
+RETRY_URLLIB_EXCEPTIONS = (error.HTTPError,)
 RETRY_REQUESTS_EXCEPTIONS = (requests.ConnectionError, requests.Timeout)
-RETRY_HTTP_CODES = (http_client.REQUEST_TIMEOUT,
-                    http_client.INTERNAL_SERVER_ERROR,
-                    http_client.BAD_GATEWAY,
-                    http_client.SERVICE_UNAVAILABLE,
-                    http_client.GATEWAY_TIMEOUT,)
+RETRY_HTTP_CODES = (
+    http_client.REQUEST_TIMEOUT,
+    http_client.INTERNAL_SERVER_ERROR,
+    http_client.BAD_GATEWAY,
+    http_client.SERVICE_UNAVAILABLE,
+    http_client.GATEWAY_TIMEOUT,
+)
 
 
 def is_retriable_requests_httperror(error):
     """Returns true error is retriable requests.exceptions.HTTPError."""
-    return (isinstance(error, requests.exceptions.HTTPError) and
-            error.response.status_code in RETRY_HTTP_CODES)
+    return (
+        isinstance(error, requests.exceptions.HTTPError)
+        and error.response.status_code in RETRY_HTTP_CODES
+    )
 
 
 def is_network_failure(error):
     """Returns True when error is a network failure."""
-    return ((isinstance(error, RETRY_URLLIB_EXCEPTIONS)
-             and error.code in RETRY_HTTP_CODES) or
-            isinstance(error, RETRY_HTTPLIB_EXCEPTIONS) or
-            isinstance(error, RETRY_SOCKET_EXCEPTIONS) or
-            isinstance(error, RETRY_REQUESTS_EXCEPTIONS) or
-            is_retriable_requests_httperror(error))
+    return (
+        (isinstance(error, RETRY_URLLIB_EXCEPTIONS) and error.code in RETRY_HTTP_CODES)
+        or isinstance(error, RETRY_HTTPLIB_EXCEPTIONS)
+        or isinstance(error, RETRY_SOCKET_EXCEPTIONS)
+        or isinstance(error, RETRY_REQUESTS_EXCEPTIONS)
+        or is_retriable_requests_httperror(error)
+    )
 
 
-def retry(attempts_number=None,
-          delay=None,
-          step=0,
-          retry_on=None,
-          retry_except=None,
-          logger=None):
+def retry(
+    attempts_number=None,
+    delay=None,
+    step=0,
+    retry_on=None,
+    retry_except=None,
+    logger=None,
+):
 
     def decorator(func):
 
@@ -82,12 +91,9 @@ def retry(attempts_number=None,
             else:
                 retry_func = retry_on
 
-            failover_func = decorators.retry(retry_attempts,
-                                             retry_delay,
-                                             step,
-                                             retry_func,
-                                             retry_except,
-                                             logger)(func)
+            failover_func = decorators.retry(
+                retry_attempts, retry_delay, step, retry_func, retry_except, logger
+            )(func)
             return failover_func(*args, **kwargs)
 
         return wrapper

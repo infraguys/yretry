@@ -1,5 +1,12 @@
 *.py[cod]
 
+# IDE
+.idea/
+.vscode
+.kilocode/
+.kilocodemodes
+.roo/
+
 # C extensions
 *.so
 

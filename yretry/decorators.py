@@ -24,14 +24,12 @@ import six
 
 @six.add_metaclass(abc.ABCMeta)
 class CatchStrategy(object):
-
     @abc.abstractmethod
     def need_to_retry(self, exc):
         pass
 
 
 class CatchFunctionStrategy(CatchStrategy):
-
     def __init__(self, to_retry):
         super(CatchFunctionStrategy, self).__init__()
         self._to_retry = to_retry
@@ -41,25 +39,24 @@ class CatchFunctionStrategy(CatchStrategy):
 
 
 class CatchExceptionStrategy(CatchFunctionStrategy):
-
     def __init__(self, exceptions_to_retry, exceptions_to_ignore=None):
         if exceptions_to_ignore:
+
             def strategy(exc):
-                return (isinstance(exc, exceptions_to_retry)
-                        and not isinstance(exc,
-                                           exceptions_to_ignore))
+                return isinstance(exc, exceptions_to_retry) and not isinstance(
+                    exc, exceptions_to_ignore
+                )
         else:
+
             def strategy(exc):
                 return isinstance(exc, exceptions_to_retry)
+
         super(CatchExceptionStrategy, self).__init__(strategy)
 
 
-def retry(attempts_number,
-          delay=0,
-          step=0,
-          retry_on=Exception,
-          retry_except=None,
-          logger=None):
+def retry(
+    attempts_number, delay=0, step=0, retry_on=Exception, retry_except=None, logger=None
+):
     """Reties function several times
 
     @param attempts_number: number of function calls (first call + retries)
@@ -89,8 +86,13 @@ def retry(attempts_number,
             except (AttributeError, IndexError):
                 pass
 
-            if isinstance(retry_on, (types.FunctionType,
-                                     types.MethodType,)):
+            if isinstance(
+                retry_on,
+                (
+                    types.FunctionType,
+                    types.MethodType,
+                ),
+            ):
                 catch_strategy = CatchFunctionStrategy(retry_on)
             else:
                 # TODO(g.melikov): this retry() should be splitted into
@@ -113,16 +115,21 @@ def retry(attempts_number,
                                 "%(exc_class)s: %(exc)s, retry "
                                 "attempt #%(retry_no)s/"
                                 "%(retry_count)s after %(delay)ss",
-                                dict(fn=func.__name__,
-                                     exc=str(e),
-                                     retry_no=attempts,
-                                     exc_class=e.__class__.__name__,
-                                     retry_count=attempts_number - 1,
-                                     delay=retry_delay))
+                                dict(
+                                    fn=func.__name__,
+                                    exc=str(e),
+                                    retry_no=attempts,
+                                    exc_class=e.__class__.__name__,
+                                    retry_count=attempts_number - 1,
+                                    delay=retry_delay,
+                                ),
+                            )
                         time.sleep(retry_delay)
                         attempts += 1
                         retry_delay += step
                     else:
                         raise
+
         return wrapper
+
     return decorator
