@@ -28,7 +28,6 @@ RETRY_ATTEMPTS = 3
 
 
 class FakeClass(mock.Mock):
-
     @network.retry(RETRY_ATTEMPTS, delay=0)
     def retry_method_works_incorrect(self):
         self.retry_count()
@@ -38,8 +37,8 @@ class FakeClass(mock.Mock):
     def retry_method_works_incorrect_http_exception(self):
         self.retry_count()
         raise error.HTTPError(
-            "FakeUrl", http_client.REQUEST_TIMEOUT,
-            "FakeMessage", None, None)
+            "FakeUrl", http_client.REQUEST_TIMEOUT, "FakeMessage", None, None
+        )
 
     @network.retry(RETRY_ATTEMPTS, delay=0)
     def retry_method_works_correct(self):
@@ -47,20 +46,17 @@ class FakeClass(mock.Mock):
 
 
 class RetryTestCase(base.TestCase):
-
     def setUp(self):
         self._target = FakeClass()
 
     def test_must_retry_three_time_and_raise_exception(self):
-        self.assertRaises(
-            socket.timeout,
-            self._target.retry_method_works_incorrect)
+        self.assertRaises(socket.timeout, self._target.retry_method_works_incorrect)
         self.assertEqual(self._target.retry_count.call_count, 3)
 
     def test_must_retry_three_time_and_raise_http_exception(self):
         self.assertRaises(
-            error.HTTPError,
-            self._target.retry_method_works_incorrect_http_exception)
+            error.HTTPError, self._target.retry_method_works_incorrect_http_exception
+        )
         self.assertEqual(self._target.retry_count.call_count, 3)
 
     def test_must_retry_one_time_and_return_correct_result(self):
